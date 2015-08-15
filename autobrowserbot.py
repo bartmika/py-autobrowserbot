@@ -121,15 +121,18 @@ class AutoBrowserBot:
             soup = BeautifulSoup(r.data, "html.parser")
             html_links = soup.find_all('a')
             for a_element in html_links:
-                href_url = a_element.get('href')
-                if href_url:
-                    if href_url[0] == '/' or href_url[0] == '?':
-                        href_url = url + href_url
-                        urls.append(href_url)
-                    elif href_url[0] == '#':
-                        pass
-                    else:
-                        urls.append(href_url)
+                try:
+                    href_url = a_element.get('href')
+                    if href_url:
+                        if href_url[0] == '/' or href_url[0] == '?':
+                            href_url = url + href_url
+                            urls.append(href_url)
+                        elif href_url[0] == '#':
+                            pass
+                        else:
+                            urls.append(href_url)
+                except Exception as e:
+                    print('Error at URL:{}.ERROR:{}'.format(url,e))
     
         # Return all the valid urls we can use in our application.
         return self.filter_urls(urls)
