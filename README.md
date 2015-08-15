@@ -1,41 +1,66 @@
-# py-autobrowserbot 
-## Raspberry Pi Setup with Raspbian and Remote Destkop Tutorial
-This tutorial was written to help network administrators setup this script on 
-their Raspbery Pi (rpi) device. It is also assumed you know about remote desktops and are not afraid of the console.
+# py-autobrowserbot
+## Description
+Python script which simulates browsing on a network for administrators to test out their firewalls filter setting / ruleset settings
+
+
+## Features
+* Supports HTTP / HTTPS GET requests
+* Large list of safe wbsites to vist
+* Large list of bad words to avoid in a URL
+
+
+## System Requirements
+* Python 3.4.x+
+* pip 6.1.1+
+* virtualenv 12.1.1+
+
+
+## Dependencies
+* urllib3 1.11
+* certifi 2015.04.28
+* beautifulsoup4 4.4.0
 
 ## Build Instructions
-1. Go to https://www.raspberrypi.org/downloads/ and download 'RASPBIAN'
+1. First clone the project locally and then go into the directory
+```
+$ git clone https://github.com/bartmika/py-autobrowserbot.git
+$ cd py-autobrowserbot
+```
 
-2. Once you have downloaded the image, burn it to a SD Card. Note: If you have a Mac OSX Computer, download "ApplePi-Baker" and use this application to burn your image.
+2. Setup our environment:
+```
+(OSX)
+$ python3 -m venv env
 
-3. Load the SD card into the rpi. Do the appropriate setup.
+(Linux/FreeBSD)
+$ virtualenv env
+```
 
-4. Install the necessary libraries and reboot. We will be using "xrdp" as our remote desktop server on this device.
-  ```
-  $ sudo apt-get update && apt-get upgrade
-  $ sudo apt-get install python3-pip python3-dev python3-setuptools git
-  $ sudo apt-get install xrdp
-  $ reboot
-  ```
+3. Activate "virtualenv" for this script:
+```
+$ source env/bin/activate
+```
 
-5. While the device is restarting, on your destkop computer, run your favourite remote desktop manager application. Note: If you have a Mac OSX computer, download the app "CoRD" and us it.
+4. Confirm we are using Python3
+```
+(env) python --version  # Should return Python 3.x
+```
 
-6. Using your desktop manager application, remotely connect to the rpi.
+5. Now let's install the required libraries:
+```
+(env) pip3 install -r requirements.txt
+```
 
-7. Open up a terminal and write the following code.
+### Usage
+To run the application, simply enter the following line:
+```
+(env) python autobrowserbot.py
+```
 
-  ```
-  $ cd ~/pi
-  $ mkdir apps
-  $ cd apps
-  $ git clone https://github.com/bartmika/py-autobrowserbot
-  $ cd py-autobrowserbot
-  $ virtualenv env
-  $ . env/bin/activate
-  (env) sudo pip-3.2 install -r requirements.txt
-  ```
 
-8. You are now ready to run the application. Simply run the following to start:
-  ```
-  python3 autobrowserbot.py
-  ```
+## License
+MIT
+
+
+## Donate
+* Bitcoin: 17VEy2fps6nJCUhWsvhJ4h42omWMJZUjcm
