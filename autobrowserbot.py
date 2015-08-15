@@ -108,11 +108,12 @@ class AutoBrowserBot:
             returns all the available hyperlinks it parsed.
         """
         try:
-            # Lookup the URL and get the HTML data from it.
+            # Lookup the URL and get the HTML data from it and if
+            # any errors occured then cancel the crawling with empty
+            # array being returned.
             r = self.http.request('GET', url)
-        except urllib3.exceptions.SSLError as e:
-            # Handle incorrect certificate error.
-            print("SSL Error for", url)
+        except Exception as e:
+            print("Error for", url)
             return []
         
         # Only process if a successful result was returned.
