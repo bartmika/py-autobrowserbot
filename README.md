@@ -5,8 +5,8 @@ Python script which simulates browsing on a network for administrators to test o
 
 ## Features
 * Supports HTTP / HTTPS GET requests
-* Large list of safe wbsites to vist
-* Large list of bad words to avoid in a URL
+* Large list of [safe websites](safe_websites.json) to vist from thus allowing varied testing to be done
+* Large list of [bad words](bad_words.json) to avoid in a URL when performing simulated web-browsing
 
 
 ## System Requirements
