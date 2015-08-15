@@ -57,6 +57,8 @@ To run the application, simply enter the following line:
 (env) python autobrowserbot.py
 ```
 
+## Extra
+If you would like to have a dedicated Raspberry Pi running this script, read how to make such a setup here:  [raspberrypi_setup.md](raspberrypi_setup.md).
 
 ## License
 MIT
