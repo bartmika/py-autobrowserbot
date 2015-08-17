@@ -119,7 +119,14 @@ class AutoBrowserBot:
         # Only process if a successful result was returned.
         urls = []
         if r.status == 200:
-            soup = BeautifulSoup(r.data, "html.parser")
+            # Load up the HTML parser for the returned data or else
+            # if error, return the urls that where currently processed.
+            try:
+                soup = BeautifulSoup(r.data, "html.parser")
+            except Exception as e:
+                return self.filter_urls(urls)
+
+            # Find all the links on the page which are link elements
             html_links = soup.find_all('a')
             for a_element in html_links:
                 try:
