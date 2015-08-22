@@ -153,6 +153,7 @@ class AutoBrowserBot:
         good_urls = []
         bad_words = self.bad_words
         for url in uncertain_urls:
+            url = url.lower()
             is_url_ok = True
             
             for bad_word in bad_words:
