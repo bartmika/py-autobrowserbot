@@ -7,12 +7,14 @@ import certifi
 from random import randint
 from bs4 import BeautifulSoup
 from time import sleep
+from crawler import *
 
 
 # These constants are used by the application to randomily pick a number
 # in between on of these ranges.
 MIN_PAGE_VIEW_SLEEP = 1
 MAX_PAGE_VIEW_SLEEP = 60
+AVG_PAGE_VIEW_SLEEP = 30
 
 
 class AutoBrowserBot:
@@ -34,13 +36,6 @@ class AutoBrowserBot:
                 bad_word = website['word']
                 bad_words.append(bad_word)
         self.bad_words = bad_words
-        
-        # Object makes HTTP and HTTPS requests.
-        # Note: https://urllib3.readthedocs.org/en/latest/security.html#using-certifi-with-urllib3
-        self.http = urllib3.PoolManager(
-            cert_reqs='CERT_REQUIRED', # Force certificate check.
-            ca_certs=certifi.where(),  # Path to the Certifi bundle.
-        )
 
     def run(self):
         """
@@ -61,7 +56,7 @@ class AutoBrowserBot:
             Function simulates visiting a site randomly clicks around the
             clickable content on the page and loads up the associated pages.
         """
-        print("Root:", url);
+        print("[Root]", url)
         clickable_urls = self.browse_site(url)
     
         # Randomly select how many links we are to "click" through on the
@@ -87,82 +82,26 @@ class AutoBrowserBot:
             website, waiting for a random amount and then return all the 
             clickable URLs there are on the page.
         """
-        print("Visiting:", url);
+        # Fetch the page URL and get more hyperlinks in the page and reshuffle
+        # them so when we fetch them again, they will be random.
+        crawler = WebCrawler(url, self.bad_words)
+        if crawler.fetch_and_process() is False:
+            sleep(AVG_PAGE_VIEW_SLEEP)
+            return []
+        more_urls = crawler.all_urls()
+        
+        # Randomize the URLs so we will be visiting each site in random
+        # and unpredictable order.
+        random.shuffle(more_urls)
+        
         # Generate how long we should stay on the particular page
         # before proceeding to our next page.
         random_sleep_interval = randint(MIN_PAGE_VIEW_SLEEP, MAX_PAGE_VIEW_SLEEP)
-                                
-        # Fetch the page URL and get more hyperlinks in the page and reshuffle
-        # them so when we fetch them again, they will be random.
-        more_urls = self.crawl_page(url)
-        random.shuffle(more_urls)
         
         # Delay visiting another page before our sleep counter finishes
-        print("Wait:", random_sleep_interval, " seconds");
         sleep(random_sleep_interval)
+        print("[Visited]", url)
         return more_urls
-
-    def crawl_page(self,url):
-        """
-            Function fetchs HTML data from the web-server at the URL and 
-            returns all the available hyperlinks it parsed.
-        """
-        try:
-            # Lookup the URL and get the HTML data from it and if
-            # any errors occured then cancel the crawling with empty
-            # array being returned.
-            r = self.http.request('GET', url)
-        except Exception as e:
-            print("Error for", url)
-            return []
-        
-        # Only process if a successful result was returned.
-        urls = []
-        if r.status == 200:
-            # Load up the HTML parser for the returned data or else
-            # if error, return the urls that where currently processed.
-            try:
-                soup = BeautifulSoup(r.data, "html.parser")
-            except Exception as e:
-                return self.filter_urls(urls)
-
-            # Find all the links on the page which are link elements
-            html_links = soup.find_all('a')
-            for a_element in html_links:
-                try:
-                    href_url = a_element.get('href')
-                    if href_url:
-                        if href_url[0] == '/' or href_url[0] == '?':
-                            href_url = url + href_url
-                            urls.append(href_url)
-                        elif href_url[0] == '#':
-                            pass
-                        else:
-                            urls.append(href_url)
-                except Exception as e:
-                    print('Error at URL:{}.ERROR:{}'.format(url,e))
-    
-        # Return all the valid urls we can use in our application.
-        return self.filter_urls(urls)
-
-    def filter_urls(self, uncertain_urls):
-        """
-            Function will look through all the urls and remove any
-            URLs that have 'bad' words in them, such as 'terrorism'.
-        """
-        good_urls = []
-        bad_words = self.bad_words
-        for url in uncertain_urls:
-            url = url.lower()
-            is_url_ok = True
-            
-            for bad_word in bad_words:
-                if bad_word in url:
-                    is_url_ok = False
-        
-            if is_url_ok:
-                good_urls.append(url)
-        return good_urls
 
 # Entry point into the application
 if __name__ == "__main__":
