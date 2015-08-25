@@ -82,6 +82,7 @@ class AutoBrowserBot:
             website, waiting for a random amount and then return all the 
             clickable URLs there are on the page.
         """
+        print("[Visit]", url)
         # Fetch the page URL and get more hyperlinks in the page and reshuffle
         # them so when we fetch them again, they will be random.
         crawler = WebCrawler(url, self.bad_words)
@@ -89,6 +90,14 @@ class AutoBrowserBot:
             sleep(AVG_PAGE_VIEW_SLEEP)
             return []
         more_urls = crawler.all_urls()
+        
+        # Fetch and download all the images on the page as a normal browser
+        # would do when visiting a page.
+        image_urls = crawler.all_images()
+        for url in image_urls:
+            if crawler.fetch_image(url):
+                pass
+               # print("[Visited]", url)
         
         # Randomize the URLs so we will be visiting each site in random
         # and unpredictable order.
@@ -100,7 +109,6 @@ class AutoBrowserBot:
         
         # Delay visiting another page before our sleep counter finishes
         sleep(random_sleep_interval)
-        print("[Visited]", url)
         return more_urls
 
 # Entry point into the application

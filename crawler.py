@@ -43,6 +43,54 @@ class WebCrawler:
                 print("Failed loading BeautifulSoup, reason:", e)
                 return False
 
+    def fetch_image(self, url):
+        """
+            Function downloads the image from the site but does nothing.
+        """
+        urls = []
+        if self.soup is None:
+            return urls
+
+        try:
+            r = self.http.request('GET', url)
+        except Exception as e:
+            #print("Failed getting link, reason: ", e)
+            return False
+        
+        # Only process if a successful result was returned.
+        if r.status == 200:
+            return True
+        else:
+            return False
+
+
+    def all_images(self):
+        urls = []
+        if self.soup is None:
+            return urls
+        try:
+            html_imgs = self.soup.find_all('img')
+            for img_element in html_imgs:
+                src_url = img_element.get('src')
+                if src_url:
+                    # Cannot support 'gif' file format so skip this file.
+                    if ".gif" in src_url:
+                        pass
+                    elif src_url[0] == '/' or src_url[0] == '?':
+                        # Generate the new url by appending the newly
+                        # discovered src_url.
+                        src_url = self.url + src_url
+                        urls.append(src_url)
+                    elif src_url[0] == '#':
+                        pass
+                    else:
+                         urls.append(src_url)
+        except Exception as e:
+            print('Error at URL:{}.ERROR:{}'.format(self.url,e))
+                
+        # Return all the valid urls we can use in our application.
+        return self.filter_urls(urls)
+    
     def all_urls(self):
         # Only process if a successful result was returned.
         urls = []
@@ -84,7 +132,7 @@ class WebCrawler:
             for bad_word in bad_words:
                 if bad_word in url:
                     is_url_ok = False
-                if "javascript" in url:
+                if "javascript" in url or ".ico" in url or "data:image" in url:
                     is_url_ok = False
         
             if is_url_ok:
