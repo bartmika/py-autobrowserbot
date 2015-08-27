@@ -1,6 +1,6 @@
 # py-autobrowserbot
 ## Description
-Python script which simulates browsing on a network for administrators to test out their firewalls filter setting / ruleset settings
+py-autobrowserbot is a Python application which autonomously browses the internet to generate artifical traffic on a network. The purpose is of this application is for network administrators to use this application test out their firewall configuration / filtering ruleset.
 
 
 ## Features
