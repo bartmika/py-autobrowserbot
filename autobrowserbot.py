@@ -1,7 +1,7 @@
 import os
 import sys
 import json
-from multiprocessing import Pool
+from multiprocessing import Pool, Process, Lock
 from simulatedbrowser import *
 
 
@@ -64,13 +64,15 @@ class AutoBrowserBot:
                 for page_url3 in page_info['pages']:
                     page_info3 = browser.randomized_visit_page(page_url3)
 
-def run_bot(bot_id):
+def run_bot(lock, num):
     """
         Run a single bot instance.
     """
-    print("Starting Bot #", bot_id)
-    bot = AutoBrowserBot(bot_id)
-    bot.run()
+    try:
+        bot = AutoBrowserBot(num)
+        bot.run()
+    finally:
+        pass
 
 # Entry point into the application
 if __name__ == "__main__":
@@ -82,8 +84,9 @@ if __name__ == "__main__":
     """
     os.system('clear;')  # Clear the console text.
     
-    with Pool(processes=NUMBER_OF_RUNNING_BOT_INSTANCES) as pool:
-        pool.map(run_bot, range(NUMBER_OF_RUNNING_BOT_INSTANCES))
-        while True:
-            sleep(1)
+    lock = Lock()
+    for num in range(NUMBER_OF_RUNNING_BOT_INSTANCES):
+        Process(target=run_bot, args=(lock, num)).start()
+    
+
 
