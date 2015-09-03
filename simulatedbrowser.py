@@ -37,8 +37,8 @@ class SimulatedBrowser:
         if url in self.visited:
             print("Skipping:",url)
             return {
-                'pages': '',
-                'images': '',
+                'pages': [],
+                'images': [],
             }
         else:
             print("Visiting:",url)
@@ -51,7 +51,10 @@ class SimulatedBrowser:
         crawler = WebCrawler(url, self.bad_words)
         if crawler.fetch_and_process() is False:
             sleep(AVG_PAGE_VIEW_SLEEP)
-            return []
+            return {
+                'pages': [],
+                'images': [],
+            }
         page_urls = crawler.all_urls()
         random.shuffle(page_urls)
         
