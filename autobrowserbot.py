@@ -81,5 +81,9 @@ if __name__ == "__main__":
         - - - - - - - - - - - - - -
     """
     os.system('clear;')  # Clear the console text.
-    with Pool(NUMBER_OF_RUNNING_BOT_INSTANCES) as p:
-        p.map(run_bot, [1, 2, 3, 4, 5, 6])
+    
+    with Pool(processes=NUMBER_OF_RUNNING_BOT_INSTANCES) as pool:
+        pool.map(run_bot, range(NUMBER_OF_RUNNING_BOT_INSTANCES))
+        while True:
+            sleep(1)
+
