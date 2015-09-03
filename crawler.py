@@ -22,8 +22,8 @@ class WebCrawler:
         self.http = urllib3.PoolManager(
             cert_reqs='CERT_REQUIRED', # Force certificate check.
             ca_certs=certifi.where(),  # Path to the Certifi bundle.
-            timeout=10.0, # Manager with 10 seconds combined timeout.
-            retries=Retry(3, redirect=False), # 3 Retries and no redirects
+            timeout=120.0, # Manager with 120 seconds combined timeout.
+            retries=Retry(1, redirect=False), # 1 Retry and no redirects
         )
         
     def fetch_and_process(self):

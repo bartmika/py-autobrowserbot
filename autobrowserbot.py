@@ -1,19 +1,17 @@
 import os
 import sys
 import json
-import random
-import urllib3
-import certifi
-from random import randint
-from bs4 import BeautifulSoup
-from time import sleep
-from crawler import *
+from multiprocessing import Pool
 from simulatedbrowser import *
-#from constant import *
+
+
+# This constant controls how many seperate individual bots are to be
+# running for this application
+NUMBER_OF_RUNNING_BOT_INSTANCES = 6
 
 
 class AutoBrowserBot:
-    def __init__(self):
+    def __init__(self, id):
         # Load up our website URL's from the JSON file.
         urls = []
         with open('safe_websites.json') as data_file:
@@ -66,6 +64,14 @@ class AutoBrowserBot:
                 for page_url3 in page_info['pages']:
                     page_info3 = browser.randomized_visit_page(page_url3)
 
+def run_bot(bot_id):
+    """
+        Run a single bot instance.
+    """
+    print("Starting Bot #", bot_id)
+    bot = AutoBrowserBot(bot_id)
+    bot.run()
+
 # Entry point into the application
 if __name__ == "__main__":
     """
@@ -75,5 +81,5 @@ if __name__ == "__main__":
         - - - - - - - - - - - - - -
     """
     os.system('clear;')  # Clear the console text.
-    bot = AutoBrowserBot()
-    bot.run()
+    with Pool(NUMBER_OF_RUNNING_BOT_INSTANCES) as p:
+        p.map(run_bot, [1, 2, 3, 4, 5, 6])

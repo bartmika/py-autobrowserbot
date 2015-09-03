@@ -2,13 +2,16 @@ import os
 import sys
 import json
 import random
-import urllib3
-import certifi
 from random import randint
-from bs4 import BeautifulSoup
 from time import sleep
 from crawler import *
-from constant import *
+
+
+# These constants are used by the application to randomily pick a number
+# in between on of these ranges.
+MIN_PAGE_VIEW_SLEEP = 1
+MAX_PAGE_VIEW_SLEEP = 240
+AVG_PAGE_VIEW_SLEEP = 120
 
 
 class SimulatedBrowser:
