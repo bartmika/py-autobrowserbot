@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import random
 from multiprocessing import Pool, Process, Lock
 from simulatedbrowser import *
 
@@ -10,8 +11,12 @@ from simulatedbrowser import *
 NUMBER_OF_RUNNING_BOT_INSTANCES = 6
 
 
-class AutoBrowserBot:
-    def __init__(self, id):
+class AutoBrowserBotProcess:
+    def __init__(self, lock, num):
+        # Store process info.
+        self.lock = lock
+        self.num = num
+        
         # Load up our website URL's from the JSON file.
         urls = []
         with open('safe_websites.json') as data_file:
@@ -68,11 +73,9 @@ def run_bot(lock, num):
     """
         Run a single bot instance.
     """
-    try:
-        bot = AutoBrowserBot(num)
-        bot.run()
-    finally:
-        pass
+    bot = AutoBrowserBotProcess(lock, num)
+    bot.run()
+
 
 # Entry point into the application
 if __name__ == "__main__":
@@ -84,6 +87,7 @@ if __name__ == "__main__":
     """
     os.system('clear;')  # Clear the console text.
     
+    # Run our simulated web-browsing bot processes.
     lock = Lock()
     for num in range(NUMBER_OF_RUNNING_BOT_INSTANCES):
         Process(target=run_bot, args=(lock, num)).start()
