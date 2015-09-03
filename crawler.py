@@ -3,6 +3,7 @@ import sys
 import json
 import random
 import urllib3
+from urllib3 import PoolManager, Retry, Timeout
 import certifi
 from random import randint
 from bs4 import BeautifulSoup
@@ -21,6 +22,8 @@ class WebCrawler:
         self.http = urllib3.PoolManager(
             cert_reqs='CERT_REQUIRED', # Force certificate check.
             ca_certs=certifi.where(),  # Path to the Certifi bundle.
+            timeout=10.0, # Manager with 10 seconds combined timeout.
+            retries=Retry(3, redirect=False), # 3 Retries and no redirects
         )
         
     def fetch_and_process(self):
