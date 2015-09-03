@@ -8,13 +8,8 @@ from random import randint
 from bs4 import BeautifulSoup
 from time import sleep
 from crawler import *
-
-
-# These constants are used by the application to randomily pick a number
-# in between on of these ranges.
-MIN_PAGE_VIEW_SLEEP = 1
-MAX_PAGE_VIEW_SLEEP = 60
-AVG_PAGE_VIEW_SLEEP = 30
+from simulatedbrowser import *
+#from constant import *
 
 
 class AutoBrowserBot:
@@ -39,80 +34,46 @@ class AutoBrowserBot:
 
     def run(self):
         """
-            Function runs continuously iterating through all the websites
+           Function runs continuously iterating through all the websites
             we have on file and simulate browsing through them.
         """
+        # Run autonomous web-browsing through the autopilot class.
         while True:
-            # Randomize the URLs so we will be visiting each site in random
-            # and unpredictable order.
-            random.shuffle(self.urls)
-            
-            # Browse around all our sites through a random order.
-            for url in self.urls:
-                self.browse_site_and_click_around(url)
+            self.main_runtime_loop()
+        
+    def main_runtime_loop(self):
+        # Iterate through all the websites in random order and then
+        # use the autopilot to autonomously browse through the websites
+        # and all the associated sites.
+        random.shuffle(self.urls)
+        for url in self.urls:
+            self.autonomously_surf_site(url)
 
-    def browse_site_and_click_around(self, url):
-        """
-            Function simulates visiting a site randomly clicks around the
-            clickable content on the page and loads up the associated pages.
-        """
-        print("[Root]", url)
-        clickable_urls = self.browse_site(url)
-    
-        # Randomly select how many links we are to "click" through on the
-        # current website and then go ahead and click through them. If there
-        # where no clickable links selected then exit this site.
-        url_counts = len(clickable_urls)
+    def autonomously_surf_site(self, url):
+        browser = SimulatedBrowser(url, self.bad_words)
+        root_page_info = browser.visit_page(url)
         
-        # If no clickable links, do not continue.
-        if url_counts == 0:
-            return
-        
-        # Else there are number of links, click through them.
-        num_of_sites_to_visit = randint(1, url_counts)
-        visit = 0
-        while visit < num_of_sites_to_visit:
-            clickable_url = clickable_urls[visit]
-            self.browse_site(clickable_url)
-            visit += 1
+        # Iterate through all the page images and go through them.
+        # Dept order (1) browsing
+        for page_url in root_page_info['pages']:
+            page_info = browser.randomized_visit_page(page_url)
 
-    def browse_site(self, url):
-        """
-            Function simulates visiting a page by fetching the page from the
-            website, waiting for a random amount and then return all the 
-            clickable URLs there are on the page.
-        """
-        print("[Visit]", url)
-        # Fetch the page URL and get more hyperlinks in the page and reshuffle
-        # them so when we fetch them again, they will be random.
-        crawler = WebCrawler(url, self.bad_words)
-        if crawler.fetch_and_process() is False:
-            sleep(AVG_PAGE_VIEW_SLEEP)
-            return []
-        more_urls = crawler.all_urls()
-        
-        # Fetch and download all the images on the page as a normal browser
-        # would do when visiting a page.
-        image_urls = crawler.all_images()
-        for url in image_urls:
-            if crawler.fetch_image(url):
-                pass
-               # print("[Visited]", url)
-        
-        # Randomize the URLs so we will be visiting each site in random
-        # and unpredictable order.
-        random.shuffle(more_urls)
-        
-        # Generate how long we should stay on the particular page
-        # before proceeding to our next page.
-        random_sleep_interval = randint(MIN_PAGE_VIEW_SLEEP, MAX_PAGE_VIEW_SLEEP)
-        
-        # Delay visiting another page before our sleep counter finishes
-        sleep(random_sleep_interval)
-        return more_urls
+            # Dept order (2) browsing
+            for page_url2 in page_info['pages']:
+                page_info2 = browser.randomized_visit_page(page_url2)
+
+                # Dept order (3) browsing
+                for page_url3 in page_info['pages']:
+                    page_info3 = browser.randomized_visit_page(page_url3)
 
 # Entry point into the application
 if __name__ == "__main__":
+    """
+        To run this application, simply run the following in your console:
+        - - - - - - - - - - - - - -
+        python autobrowserbot.py
+        - - - - - - - - - - - - - -
+    """
     os.system('clear;')  # Clear the console text.
     bot = AutoBrowserBot()
     bot.run()
